@@ -1,9 +1,9 @@
-name: 3 Daily Commits
+name: Auto Commit Every 2 Hours
 
 on:
   schedule:
-    - cron: '0 */2 * * *'
-  workflow_dispatch:      # Allows manual runs
+    - cron: '0 */2 * * *'   # Every 2 hours at minute 0
+  workflow_dispatch:         # Optional: allows manual runs
 
 jobs:
   update-file:
@@ -15,14 +15,12 @@ jobs:
 
       - name: Update daily log file
         run: |
-          timestamp=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          echo "$timestamp - GitHub Actions auto-commit" >> daily-log.txt
+          echo "$(date -u +"%Y-%m-%d %H:%M:%S UTC") - Auto-update from GitHub Actions" >> daily-log.txt
 
-      - name: Set up Git
+      - name: Set up Git user (use your own GitHub identity)
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
+          git config user.name "BiswojitOps"  # Replace with your GitHub username
+          git config user.email "biswojit987@gmail.com"  # Must be your verified GitHub email
 
       - name: Commit and push
         env:
@@ -32,3 +30,6 @@ jobs:
           git commit -m "chore: auto update at $(date -u)" || echo "Nothing to commit"
           git remote set-url origin https://x-access-token:${PAT_TOKEN}@github.com/${{ github.repository }}
           git push
+
+      - name: Debug recent commits
+        run: git log -5 --oneline
